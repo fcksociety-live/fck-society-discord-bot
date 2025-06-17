@@ -8,7 +8,6 @@ import logging
 from utils.config import config
 
 from webserver import keep_alive
-keep_alive()
 
 # Set up logging
 logging.basicConfig(
@@ -28,6 +27,7 @@ intents.voice_states = True  # Required for voice channel features
 
 # Create bot instance
 bot = commands.Bot(command_prefix='!', intents=intents)
+keep_alive(bot)
 
 @bot.event
 async def on_ready():

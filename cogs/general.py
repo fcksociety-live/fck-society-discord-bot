@@ -48,6 +48,8 @@ class General(commands.Cog):
             value=("`/serverstatus` - Check the Minecraft server status\n"
                    "`/serverip` - Get the Minecraft server IP\n"
                    "`/playerlist` - View online players\n"
+                   "`/startserver` - Start the server (commands channel)\n"
+                   "`/wakeserver` - Wake up the server (commands channel)\n"
                    "`/lock` - Lock your voice channel\n"
                    "`/unlock` - Unlock your voice channel\n"),
             inline=False)
@@ -70,10 +72,15 @@ class General(commands.Cog):
             "`/serverip` - Get the Minecraft server IP address\n"
             "`/playerlist` - See which players are online\n")
 
-        admin_commands = ("`/startserver` - Start the Minecraft server\n"
-                          "`/stopserver` - Stop the Minecraft server\n"
-                          "`/sleepserver` - Hibernate the Minecraft server\n"
-                          "`/wakeserver` - Wake up the Minecraft server\n")
+        public_server_commands = (
+            "`/startserver` - Start the Minecraft server (🔹 commands channel only)\n"
+            "`/wakeserver` - Wake up the Minecraft server (🔹 commands channel only)\n"
+        )
+
+        admin_commands = (
+            "`/stopserver` - Stop the Minecraft server (🔸 cPanel channel, Admin/Mod only)\n"
+            "`/sleepserver` - Hibernate the Minecraft server (🔸 cPanel channel, Admin/Mod only)\n"
+        )
 
         voice_commands = (
             "`/lock` - Lock your voice channel to prevent others from joining\n"
@@ -85,8 +92,11 @@ class General(commands.Cog):
                             "`/botinfo` - View information about the bot\n"
                             "`/societyhelp` - Show this help message\n")
 
-        embed.add_field(name="📋 Minecraft Commands",
+        embed.add_field(name="📋 Minecraft Info Commands",
                         value=minecraft_commands,
+                        inline=False)
+        embed.add_field(name="🚀 Public Server Commands",
+                        value=public_server_commands,
                         inline=False)
         embed.add_field(name="🔊 Voice Channel Commands",
                         value=voice_commands,
@@ -98,9 +108,14 @@ class General(commands.Cog):
                         value=admin_commands,
                         inline=False)
 
+        embed.add_field(
+            name="📟 Console Channel",
+            value="**Owner Only**: Send commands directly to the server console in the console channel",
+            inline=False
+        )
+
         embed.set_footer(
-            text=
-            "Admin commands can only be used in the cPanel channel by users with Admin/Moderator roles"
+            text="🔹 = Available to everyone | 🔸 = Admin/Mod only | 📟 = Owner only"
         )
 
         await ctx.send(embed=embed)

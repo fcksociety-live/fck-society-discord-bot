@@ -15,10 +15,18 @@ class Config:
         # Channel IDs
         self.cpanel_channel_id = int(os.getenv('CPANEL_CHANNEL_ID', '0'))
         self.commands_channel_id = int(os.getenv('COMMANDS_CHANNEL_ID', '0'))
+        self.console_channel_id = int(os.getenv('CONSOLE_CHANNEL_ID', '0'))
+        self.status_channel_id = int(os.getenv('STATUS_CHANNEL_ID', '0'))  # New
+        
+        # Category IDs
+        self.admin_category_id = int(os.getenv('ADMIN_CATEGORY_ID', '0'))
         
         # Role IDs
         self.admin_role_id = int(os.getenv('ADMIN_ROLE_ID', '0'))
         self.mod_role_id = int(os.getenv('MOD_ROLE_ID', '0'))
+        
+        # User IDs
+        self.owner_id = int(os.getenv('OWNER_ID', '0'))
         
         # Voice channel category/channel IDs
         self.temp_vc_category_id = int(os.getenv('TEMP_VC_CATEGORY_ID', '0'))
@@ -30,8 +38,12 @@ class Config:
             "server_ip": self.server_ip,
             "cpanel_channel_id": self.cpanel_channel_id,
             "commands_channel_id": self.commands_channel_id,
+            "console_channel_id": self.console_channel_id,
+            "status_channel_id": self.status_channel_id,
+            "admin_category_id": self.admin_category_id,
             "admin_role_id": self.admin_role_id,
             "mod_role_id": self.mod_role_id,
+            "owner_id": self.owner_id,
             "temp_vc_category_id": self.temp_vc_category_id,
             "create_vc_channel_id": self.create_vc_channel_id
         }

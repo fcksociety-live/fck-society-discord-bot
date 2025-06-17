@@ -1,6 +1,7 @@
 import requests
 import time
 from typing import Dict, List, Any, Optional, Tuple
+import json
 
 class MinefortAPI:
     """Wrapper for Minefort API to manage Minecraft servers."""
@@ -12,6 +13,7 @@ class MinefortAPI:
         self.password = password
         self.session = requests.Session()
         self.is_logged_in = False
+        self.last_console_log = ""
     
     def login(self) -> bool:
         """Log in to the Minefort API."""
@@ -36,7 +38,7 @@ class MinefortAPI:
             return True
 
         except Exception as e:
-            print(f"Login failed: {str(e)}")
+            print(f"❌ Login failed: {str(e)}")
             self.is_logged_in = False
             return False
     
@@ -65,7 +67,6 @@ class MinefortAPI:
             data = response.json()
             return data.get('result', [])
         except Exception as e:
-            print(f"Failed to get servers: {str(e)}")
             # Try to re-login if the session might have expired
             if isinstance(e, requests.exceptions.HTTPError) and e.response.status_code in [401, 403]:
                 self.is_logged_in = False
@@ -123,6 +124,77 @@ class MinefortAPI:
                     
             return False, f"Error performing action: {str(e)}"
 
+    def get_console_logs(self, server_id: str) -> Tuple[bool, str]:
+        """
+        Get console logs for a server.
+        
+        Args:
+            server_id: The ID of the server
+            
+        Returns:
+            Tuple of (success, logs)
+        """
+        if not self.ensure_login():
+            return False, "Failed to login to Minefort"
+            
+        # Try the console endpoint
+        console_endpoint = f"{self.BASE_URL}/server/{server_id}/console"
+        
+        headers = {
+            "accept": "application/json, text/plain, */*",
+            "origin": "https://minefort.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+        }
+
+        try:
+            response = self.session.get(console_endpoint, headers=headers)
+            response.raise_for_status()
+            
+            json_response = response.json()
+            logs = json_response.get('logs', json_response.get('result', json_response.get('console', '')))
+            
+            return True, logs
+                
+        except Exception as e:
+            return False, f"Error fetching console logs: {str(e)}"
+
+    def send_console_command(self, server_id: str, command: str) -> Tuple[bool, str]:
+        """
+        Send a command to the server console.
+        
+        Args:
+            server_id: The ID of the server
+            command: The command to send
+            
+        Returns:
+            Tuple of (success, message)
+        """
+        if not self.ensure_login():
+            return False, "Failed to login to Minefort"
+            
+        # Use the correct endpoint /command
+        command_endpoint = f"{self.BASE_URL}/server/{server_id}/command"
+        
+        headers = {
+            "accept": "application/json, text/plain, */*",
+            "content-type": "application/json",
+            "origin": "https://minefort.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+        }
+        
+        payload = {
+            "command": command
+        }
+
+        try:
+            response = self.session.post(command_endpoint, headers=headers, json=payload)
+            response.raise_for_status()
+            
+            return True, f"Command '{command}' sent successfully"
+                
+        except Exception as e:
+            return False, f"Error sending command: {str(e)}"
+
     def get_status_message(self, server) -> str:
         """Get a formatted status message for a server."""
         status_text = "UNKNOWN"
@@ -161,8 +233,6 @@ class MinefortAPI:
             return False, [], f"Server is not running. Current status: {status}"
             
         # If server is running, get the player list from the server details
-        # Note: This is an educated guess as your cli.py doesn't include a player list function
-        # You may need to adjust this based on the actual Minefort API
         player_list = target_server.get('players', [])
         if isinstance(player_list, list):
             return True, player_list, f"{len(player_list)} players online"
