@@ -7,6 +7,9 @@ import os
 import logging
 from utils.config import config
 
+from webserver import keep_alive
+keep_alive()
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
