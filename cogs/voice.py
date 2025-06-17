@@ -4,6 +4,11 @@ import asyncio
 from utils.config import config
 
 class VoiceChannels(commands.Cog):
+    """
+    Voice channel management cog
+    Note: This implementation only manages voice channels and doesn't use audio streaming functionality
+    """
+    
     def __init__(self, bot):
         self.bot = bot
         self.temp_channels = {}  # track temp channels: {channel_id: owner_id}

@@ -1,3 +1,5 @@
+import voice_patch
+
 import discord
 from discord.ext import commands
 import asyncio
