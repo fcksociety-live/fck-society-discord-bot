@@ -1,1 +1,0 @@
-# fck-society-discord-bot
